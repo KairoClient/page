@@ -1,1 +1,1197 @@
-test page
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kairo</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;800&display=swap');
+
+        :root {
+            --bg-base: #030101;
+            --bg-app: #080303;
+            --bg-panel: #110505;
+            --bg-card: #160707;
+
+            --accent-main: #ff3300;
+            --accent-dim: #cc2900;
+            --accent-glow: rgba(255, 51, 0, 0.35);
+            --accent-glow-strong: rgba(255, 51, 0, 0.6);
+
+            --text-bright: #ffffff;
+            --text-main: #e0d0d0;
+            --text-muted: #a08080;
+            --text-label: #ff5533;
+
+            --border-dim: rgba(255, 51, 0, 0.1);
+            --border-active: rgba(255, 51, 0, 0.3);
+
+            --gradient-primary: linear-gradient(90deg, #b31a00, #ff4000);
+            --gradient-card: linear-gradient(180deg, rgba(255, 51, 0, 0.05) 0%, transparent 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-base);
+            color: var(--text-main);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        .app-label {
+            font-size: 10px;
+            font-weight: 800;
+            color: var(--text-label);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .app-divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            color: var(--text-label);
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin: 2rem 0;
+        }
+
+        .app-divider::before,
+        .app-divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid var(--border-dim);
+        }
+
+        .app-divider:not(:empty)::before {
+            margin-right: 1.5em;
+        }
+
+        .app-divider:not(:empty)::after {
+            margin-left: 1.5em;
+        }
+
+        .bg-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(var(--border-dim) 1px, transparent 1px),
+                linear-gradient(90deg, var(--border-dim) 1px, transparent 1px);
+            background-size: 80px 80px;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.3;
+        }
+
+        .bg-glow {
+            position: fixed;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(255, 51, 0, 0.05) 0%, transparent 70%);
+            top: -300px;
+            left: 50%;
+            transform: translateX(-50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-base);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #331111;
+            border-radius: 4px;
+            border: 1px solid var(--border-dim);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-dim);
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 1rem 2rem;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid transparent;
+        }
+
+        .navbar.scrolled {
+            background: rgba(3, 1, 1, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-dim);
+        }
+
+        .nav-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .nav-logo-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--bg-panel);
+            border: 1px solid var(--border-active);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-main);
+            box-shadow: inset 0 0 10px rgba(255, 51, 0, 0.1), 0 0 10px rgba(255, 51, 0, 0.2);
+        }
+
+        .nav-logo-icon svg {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+        }
+
+        .nav-logo-text {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text-bright);
+            letter-spacing: 0.5px;
+        }
+
+        .nav-badge {
+            background: rgba(255, 51, 0, 0.15);
+            color: var(--accent-main);
+            font-size: 9px;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 6px;
+            border: 1px solid rgba(255, 51, 0, 0.3);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2.5rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: color 0.2s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-bright);
+            text-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        .btn-main {
+            padding: 12px 28px;
+            background: var(--gradient-primary);
+            color: white !important;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.2s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            text-decoration: none;
+            box-shadow: 0 4px 20px var(--accent-glow);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-main:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 30px var(--accent-glow-strong);
+            filter: brightness(1.1);
+        }
+
+        .btn-outline {
+            padding: 12px 28px;
+            background: var(--bg-panel);
+            color: var(--text-bright) !important;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.2s ease;
+            border: 1px solid var(--border-active);
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-outline:hover {
+            background: var(--bg-card);
+            border-color: var(--accent-main);
+            box-shadow: 0 0 15px rgba(255, 51, 0, 0.15);
+        }
+        .hero {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 8rem 2rem 4rem;
+        }
+
+        .hero-content {
+            max-width: 900px;
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            background: rgba(255, 51, 0, 0.05);
+            border: 1px solid var(--border-active);
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-bright);
+            margin-bottom: 2rem;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent-main);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--accent-main);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 51, 0, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 6px rgba(255, 51, 0, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 51, 0, 0);
+            }
+        }
+
+        .hero-title {
+            font-size: clamp(3.5rem, 8vw, 6.5rem);
+            font-weight: 900;
+            line-height: 1;
+            letter-spacing: -2px;
+            margin-bottom: 1.5rem;
+            color: var(--text-bright);
+            text-transform: uppercase;
+        }
+
+        .hero-title .highlight {
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 40px rgba(255, 51, 0, 0.3);
+        }
+
+        .hero-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto 3rem;
+            font-weight: 400;
+            line-height: 1.6;
+        }
+
+        .hero-actions {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        /* Features Section */
+        .features-section {
+            padding: 4rem 2rem 6rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .feature-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-dim);
+            border-radius: 16px;
+            padding: 2.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--gradient-primary);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .feature-box:hover {
+            border-color: var(--border-active);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .feature-box:hover::before {
+            opacity: 1;
+        }
+
+        .feature-icon {
+            width: 45px;
+            height: 45px;
+            background: rgba(255, 51, 0, 0.1);
+            border: 1px solid var(--border-active);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-main);
+            font-size: 20px;
+            margin-bottom: 1.5rem;
+            box-shadow: inset 0 0 15px rgba(255, 51, 0, 0.05);
+        }
+
+        .feature-box-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--text-bright);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .feature-box-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* Lite Section - Replica */
+        .lite-section {
+            padding: 6rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .lite-container {
+            display: grid;
+            grid-template-columns: 1fr 450px;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .lite-text-content h2 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            line-height: 1.1;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+            color: var(--text-bright);
+            letter-spacing: -1px;
+        }
+
+        .lite-text-content h2 span {
+            color: var(--accent-main);
+        }
+
+        .replica-app {
+            background: var(--bg-app);
+            border: 1px solid #2a0b0b;
+            border-radius: 16px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.9);
+            width: 100%;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .replica-header {
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .replica-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .r-icon {
+            width: 36px;
+            height: 36px;
+            border: 1px solid rgba(255, 51, 0, 0.3);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 0 15px rgba(255, 51, 0, 0.1);
+        }
+
+        .r-icon svg {
+            width: 16px;
+            fill: var(--accent-main);
+        }
+
+        .r-title-wrap {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .r-title {
+            font-size: 16px;
+            font-weight: 900;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .r-badge {
+            background: var(--accent-main);
+            color: white;
+            font-size: 9px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 900;
+        }
+
+        .r-sub {
+            font-size: 9px;
+            color: var(--text-label);
+            font-weight: 800;
+            letter-spacing: 1px;
+            margin-top: 2px;
+        }
+
+        .replica-tabs {
+            display: flex;
+            border-bottom: 1px solid #1a0a0a;
+            border-top: 1px solid #1a0a0a;
+        }
+
+        .r-tab {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            font-size: 10px;
+            font-weight: 800;
+            color: #666;
+            letter-spacing: 1.5px;
+        }
+
+        .r-tab.active {
+            color: var(--accent-main);
+            border-bottom: 2px solid var(--accent-main);
+            box-shadow: inset 0 -10px 15px -10px rgba(255, 51, 0, 0.2);
+        }
+
+        .replica-body {
+            padding: 1.5rem;
+            background: var(--bg-panel);
+        }
+
+        .r-grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .r-card {
+            background: var(--bg-card);
+            border: 1px solid #2a0b0b;
+            border-radius: 12px;
+            padding: 1.2rem;
+            position: relative;
+        }
+
+        .r-card.highlight {
+            border-color: rgba(255, 51, 0, 0.2);
+            box-shadow: inset 0 0 20px rgba(255, 51, 0, 0.02);
+        }
+
+        .r-slider-val {
+            display: flex;
+            align-items: baseline;
+            gap: 4px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+        }
+
+        .r-num {
+            font-size: 42px;
+            font-weight: 800;
+            color: white;
+            line-height: 1;
+            text-shadow: 0 0 20px rgba(255, 51, 0, 0.3);
+        }
+
+        .r-unit {
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--accent-main);
+        }
+
+        .r-slider-track {
+            height: 4px;
+            background: #2a0b0b;
+            border-radius: 2px;
+            position: relative;
+            margin-bottom: 8px;
+        }
+
+        .r-slider-fill {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background: var(--gradient-primary);
+            border-radius: 2px;
+            width: 60%;
+            box-shadow: 0 0 10px var(--accent-main);
+        }
+
+        .r-slider-thumb {
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 60%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 15px white, 0 0 5px var(--accent-main);
+        }
+
+        .r-slider-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 9px;
+            color: #555;
+            font-weight: 700;
+        }
+
+        .setting-title {
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--text-bright);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
+        }
+
+        .setting-desc {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .r-keybind {
+            display: inline-block;
+            border: 1px solid #331111;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-label);
+            margin-top: 8px;
+        }
+
+        .toggle-switch {
+            width: 36px;
+            height: 20px;
+            background: #1a0a0a;
+            border: 1px solid var(--border-active);
+            border-radius: 10px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: #666;
+            border-radius: 50%;
+            top: 3px;
+            left: 4px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .toggle-switch.active {
+            background: var(--accent-dim);
+            border-color: var(--accent-main);
+            box-shadow: 0 0 10px rgba(255, 51, 0, 0.3);
+        }
+
+        .toggle-switch.active::after {
+            background: white;
+            transform: translateX(16px);
+            box-shadow: 0 0 8px white;
+        }
+
+        .r-save-btn {
+            width: 100%;
+            padding: 16px;
+            background: var(--gradient-primary);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 900;
+            font-size: 12px;
+            letter-spacing: 2px;
+            margin-top: 1rem;
+            box-shadow: 0 10px 30px var(--accent-glow-strong);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .download-section {
+            padding: 6rem 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .download-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+
+        .download-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-dim);
+            border-radius: 16px;
+            padding: 3rem 2rem;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+        }
+
+        .download-card:hover {
+            border-color: var(--border-active);
+            transform: translateY(-3px);
+        }
+
+        .download-card.featured {
+            border-color: var(--accent-dim);
+            background: linear-gradient(180deg, rgba(255, 51, 0, 0.05), var(--bg-card));
+            box-shadow: 0 0 40px rgba(255, 51, 0, 0.05);
+        }
+
+        .download-card.featured::before {
+            content: 'RECOMMENDED';
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--accent-main);
+            color: white;
+            font-size: 9px;
+            font-weight: 900;
+            padding: 4px 12px;
+            border-radius: 20px;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px var(--accent-glow);
+        }
+
+        .dl-name {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--text-label);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+        }
+
+        .dl-amount {
+            font-size: 48px;
+            font-weight: 900;
+            color: white;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .dl-amount span {
+            font-size: 18px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .dl-desc {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border-dim);
+        }
+
+        .dl-features {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 2rem;
+        }
+
+        .p-feat {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            color: #ccc;
+        }
+
+        .p-feat i {
+            color: var(--accent-main);
+            font-style: normal;
+            font-weight: 900;
+            font-size: 14px;
+        }
+
+        /* Footer */
+        .footer {
+            border-top: 1px solid var(--border-dim);
+            padding: 3rem 2rem;
+            background: var(--bg-base);
+            position: relative;
+            z-index: 1;
+        }
+
+        .footer-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-text {
+            font-size: 11px;
+            color: #666;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .footer-links a {
+            color: #666;
+            text-decoration: none;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-main);
+        }
+
+        /* Animations */
+        .animate-up {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .animate-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 900px) {
+            .lite-container {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-title {
+                font-size: 3rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-grid"></div>
+    <div class="bg-glow"></div>
+    <nav class="navbar" id="navbar">
+        <div class="nav-inner">
+            <a href="#" class="nav-logo">
+                <div class="nav-logo-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M11 21L1 12l10-9v18zm2 0V3l10 9-10 9z" />
+                    </svg>
+                </div>
+                <span class="nav-logo-text">KAIRO <span class="nav-badge">V1</span></span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#lite">Lite Autoclicker</a></li>
+                <li><a href="#download">Download</a></li>
+            </ul>
+            <a href="#download" class="btn-main" style="padding: 10px 20px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
+                </svg>
+                Download Free
+            </a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-content">
+            <div class="status-pill animate-up">
+                <span class="status-dot"></span>
+                STATUS: UNDETECTED (1.8.9)
+            </div>
+            <h1 class="hero-title animate-up" style="transition-delay: 0.1s;">
+                Dominate with<br>
+                <span class="highlight">Absolute Power</span>
+            </h1>
+            <p class="hero-subtitle animate-up" style="transition-delay: 0.2s;">
+                An elite ghost client engineered for stealth and performance. Premium features, pure bypasses, zero cost.
+            </p>
+            <div class="hero-actions animate-up" style="transition-delay: 0.3s;">
+                <a href="#download" class="btn-main">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
+                    </svg>
+                    Download Kairo V1
+                </a>
+                <a href="#features" class="btn-outline">
+                    View Features
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="features-section" id="features">
+        <div class="section-header animate-up">
+            <div class="app-divider" style="margin: 0 auto 1rem; max-width: 200px;">Architecture</div>
+            <h2 class="hero-title" style="font-size: 2.5rem;">Engineered for <span class="highlight">Supremacy</span></h2>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-box animate-up">
+                <div class="feature-icon">⚡</div>
+                <div class="feature-box-title">Zero Overhead</div>
+                <div class="feature-box-desc">Built with highly optimized ASM hooks. Experience 0 FPS drops compared to vanilla Minecraft, even with all render modules enabled.</div>
+            </div>
+            <div class="feature-box animate-up" style="transition-delay: 0.1s;">
+                <div class="feature-icon">🛡️</div>
+                <div class="feature-box-title">Anti-Cheat Bypasses</div>
+                <div class="feature-box-desc">Constantly updated logic to bypass modern server-side anticheats like Grim, Vulcan, and Matrix. We analyze their checks so you don't have to.</div>
+            </div>
+            <div class="feature-box animate-up" style="transition-delay: 0.2s;">
+                <div class="feature-icon">⚙️</div>
+                <div class="feature-box-title">Deep Customization</div>
+                <div class="feature-box-desc">Every module features granular control. Adjust raytracing ranges, humanization factors, and visual elements to match your exact playstyle.</div>
+            </div>
+        </div>
+    </section>
+    <section class="lite-section" id="lite">
+        <div class="lite-container">
+            <div class="lite-text-content animate-up">
+                <div class="app-divider" style="justify-content: flex-start;">Standalone Tool</div>
+                <h2>Kairo V1<br><span>Lite</span></h2>
+                <p style="color: var(--text-muted); margin-bottom: 2rem; font-size: 15px;">
+                    Prefer an external approach? Kairo V1 Lite is our dedicated external autoclicker. No injection, pure simulation. It runs perfectly alongside any client or completely vanilla.
+                </p>
+
+                <ul style="list-style: none; display: flex; flex-direction: column; gap: 12px; margin-bottom: 2.5rem;">
+                    <li style="display: flex; gap: 10px; color: #ccc; font-size: 13px;">
+                        <span style="color: var(--accent-main);">✦</span> True external processing (0% ban rate on screenshares)
+                    </li>
+                    <li style="display: flex; gap: 10px; color: #ccc; font-size: 13px;">
+                        <span style="color: var(--accent-main);">✦</span> Advanced humanization algorithms & jitter
+                    </li>
+                    <li style="display: flex; gap: 10px; color: #ccc; font-size: 13px;">
+                        <span style="color: var(--accent-main);">✦</span> Left and Right clicker integration
+                    </li>
+                </ul>
+
+                <a href="#download" class="btn-outline">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
+                    </svg>
+                    Download Lite Free
+                </a>
+            </div>
+            <div class="replica-app animate-up">
+                <div class="replica-header">
+                    <div class="replica-logo">
+                        <div class="r-icon"><svg viewBox="0 0 24 24">
+                                <path d="M11 21L1 12l10-9v18zm2 0V3l10 9-10 9z" />
+                            </svg></div>
+                        <div class="r-title-wrap">
+                            <div class="r-title">Kairo V1 <span class="r-badge">LITE</span></div>
+                            <div class="r-sub">AUTO CLICKER</div>
+                        </div>
+                    </div>
+                    <div style="background: #1a0a0a; border: 1px solid #331111; border-radius: 20px; padding: 4px 12px; font-size: 10px; font-weight: 800; color: #888; display: flex; align-items: center; gap: 6px;">
+                        <span style="width:6px; height:6px; background:#ff3300; border-radius:50%;"></span>
+                        Waiting for MC
+                    </div>
+                </div>
+
+                <div class="replica-tabs">
+                    <div class="r-tab active">LEFT CLICKER</div>
+                    <div class="r-tab">RIGHT CLICKER</div>
+                </div>
+
+                <div class="replica-body">
+                    <div class="app-divider" style="margin-top:0;">CLICK SPEED</div>
+
+                    <div class="r-grid-2">
+                        <div class="r-card highlight">
+                            <div class="app-label">MIN CPS</div>
+                            <div class="r-slider-val">
+                                <span class="r-num">10</span><span class="r-unit">cps</span>
+                            </div>
+                            <div class="r-slider-track">
+                                <div class="r-slider-fill" style="width: 50%;"></div>
+                                <div class="r-slider-thumb" style="left: 50%;"></div>
+                            </div>
+                            <div class="r-slider-labels"><span>1</span><span>20</span></div>
+                        </div>
+                        <div class="r-card highlight">
+                            <div class="app-label">MAX CPS</div>
+                            <div class="r-slider-val">
+                                <span class="r-num">16</span><span class="r-unit">cps</span>
+                            </div>
+                            <div class="r-slider-track">
+                                <div class="r-slider-fill" style="width: 80%;"></div>
+                                <div class="r-slider-thumb" style="left: 80%;"></div>
+                            </div>
+                            <div class="r-slider-labels"><span>1</span><span>20</span></div>
+                        </div>
+                    </div>
+
+                    <div class="app-divider">SETTINGS</div>
+
+                    <div class="r-grid-2" style="margin-bottom: 1rem;">
+                        <div class="r-card">
+                            <div class="setting-title">SUSPEND KEY</div>
+                            <div class="setting-desc">Hold to pause clicker</div>
+                            <div class="r-keybind">Mouse 5</div>
+                        </div>
+                        <div class="r-card">
+                            <div class="setting-title">MODULE KEY</div>
+                            <div class="setting-desc">Click to rebind</div>
+                            <div class="r-keybind">V</div>
+                        </div>
+                    </div>
+
+                    <div class="r-card" style="margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div class="setting-title">AVOID GUI</div>
+                            <div class="setting-desc">Pause in menus</div>
+                        </div>
+                        <div class="toggle-switch"></div>
+                    </div>
+
+                    <div class="r-card" style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div class="setting-title">AUTOCLICKER</div>
+                            <div class="setting-desc">Master enable / disable toggle</div>
+                            <div style="margin-top: 8px; color: var(--accent-main); font-size: 10px; font-weight: 800; display: flex; align-items: center; gap: 4px;">
+                                <span style="width:6px; height:6px; background:var(--accent-main); border-radius:50%; box-shadow: 0 0 5px var(--accent-main);"></span> ENABLED
+                            </div>
+                        </div>
+                        <div class="toggle-switch active"></div>
+                    </div>
+
+                    <button class="r-save-btn">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="white">
+                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                        </svg>
+                        SAVE CONFIGURATION
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="download-section" id="download">
+        <div class="section-header animate-up">
+            <div class="app-divider" style="margin: 0 auto 1rem; max-width: 200px;">Direct Download</div>
+            <h2 class="hero-title" style="font-size: 2.5rem;">Get Kairo <span class="highlight">Free</span></h2>
+            <p style="color: var(--text-muted); font-size: 14px; max-width: 400px; margin: 1rem auto 0;">No paywalls. No subscriptions. Just pure dominance delivered instantly.</p>
+        </div>
+
+        <div class="download-grid">
+            <div class="download-card animate-up">
+                <div class="dl-name">Kairo Lite (.exe)</div>
+                <div class="dl-amount">FREE</div>
+                <div class="dl-desc">Standalone external autoclicker setup.</div>
+
+                <div class="dl-features">
+                    <div class="p-feat"><i>✓</i> Zero install required</div>
+                    <div class="p-feat"><i>✓</i> Screenshare bypass (Echo, Paladin)</div>
+                    <div class="p-feat"><i>✓</i> Advanced randomized Jitter</div>
+                    <div class="p-feat"><i>✓</i> Lightweight execution</div>
+                </div>
+
+                <a href="#" class="btn-outline" style="text-align: center; width: 100%;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
+                    </svg>
+                    Download Lite
+                </a>
+            </div>
+            <div class="download-card featured animate-up">
+                <div class="dl-name" style="color: var(--text-bright);">Kairo V1 (.jar)</div>
+                <div class="dl-amount" style="background: var(--gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">FREE</div>
+                <div class="dl-desc">Complete ghost client injection library.</div>
+
+                <div class="dl-features">
+                    <div class="p-feat"><i>✓</i> Forge 1.8.9 integration</div>
+                    <div class="p-feat"><i>✓</i> All 50+ combat/movement modules</div>
+                    <div class="p-feat"><i>✓</i> Built-in GUI and Arraylist</div>
+                    <div class="p-feat"><i>✓</i> Community config repository</div>
+                    <div class="p-feat"><i>✓</i> Daily stealth updates</div>
+                </div>
+
+                <a href="#" class="btn-main" style="width: 100%;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
+                    </svg>
+                    Download Client
+                </a>
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+        <div class="footer-inner">
+            <div class="footer-text">© 2024 KAIRO CLIENT. ALL RIGHTS RESERVED.</div>
+            <div class="footer-links">
+                <a href="#">Discord Community</a>
+                <a href="#">Terms of Use</a>
+                <a href="#">Support</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 20) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, {
+            threshold: 0.1,
+            rootMargin: "0px 0px -50px 0px"
+        });
+
+        document.querySelectorAll('.animate-up').forEach(el => observer.observe(el));
+        document.querySelectorAll('.toggle-switch').forEach(toggle => {
+            toggle.addEventListener('click', function() {
+                this.classList.toggle('active');
+            });
+        });
+    </script>
+</body>
+
+</html>
